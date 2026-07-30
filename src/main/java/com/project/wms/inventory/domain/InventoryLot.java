@@ -23,7 +23,7 @@ import java.util.Objects;
 public class InventoryLot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,7 +63,7 @@ public class InventoryLot {
     private Instant updatedAt;
 
     // Only Builder can call it
-    private InventoryLot(ProductSku productSku, Supplier supplier, Warehouse warehouse, Location location,
+    InventoryLot(ProductSku productSku, Supplier supplier, Warehouse warehouse, Location location,
                  String batchNo, LocalDate expiryDate, int quantity, LotState state) {
         this.productSku = productSku;
         this.supplier = supplier;
@@ -137,6 +137,10 @@ public class InventoryLot {
             }
             return new InventoryLot(productSku, supplier, warehouse, location, batchNo, expiryDate, quantity, state);
         }
+    }
+    public void transitionTo(LotState newState) {
+        this.state = newState;
+        this.updatedAt = Instant.now();
     }
 
 }

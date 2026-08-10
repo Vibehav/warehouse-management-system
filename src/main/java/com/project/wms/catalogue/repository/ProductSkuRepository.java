@@ -1,6 +1,6 @@
 package com.project.wms.catalogue.repository;
 
-import com.project.wms.catalogue.folder.ProductSku;
+import com.project.wms.catalogue.domain.ProductSku;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

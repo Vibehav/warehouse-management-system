@@ -1,5 +1,7 @@
-package com.project.wms.catalogue.folder;
+package com.project.wms.catalogue.domain;
 
+import com.project.wms.common.enums.ProductCategory;
+import com.project.wms.common.enums.StorageZoneType;
 import com.project.wms.supplier.domain.Supplier;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,5 +30,15 @@ public class ProductSku {
     @Column(nullable = false)
     private String name;
 
-    private String category;
+    private ProductCategory category;  // FMCG,PHARMA,APPAREL,CHEMICAL
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "storage_zone_type", nullable = false)
+    private StorageZoneType storageZoneType;
+
+    private Double weight;   // kg
+    private Double length;   // cm
+    private Double width;
+    private Double height;
+
 }

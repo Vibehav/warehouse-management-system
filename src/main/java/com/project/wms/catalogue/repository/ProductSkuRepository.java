@@ -9,7 +9,12 @@ import java.util.Optional;
 
 @Repository
 public interface ProductSkuRepository extends JpaRepository<ProductSku, Long> {
-    Optional<ProductSku> findBySkuCode(String skuCode);
-    List<ProductSku> findBySupplierId(Long supplierId);
+    boolean existsBySkuCodeAndDeletedFalse(String skuCode);
+
+    Optional<ProductSku> findByIdAndDeletedFalse(Long id);
+
+    List<ProductSku> findAllByDeletedFalse();
+
+    Optional<ProductSku> findByIdAndDeletedTrue(Long id);
 }
 

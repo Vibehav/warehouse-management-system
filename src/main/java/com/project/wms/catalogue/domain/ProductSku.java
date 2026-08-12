@@ -30,6 +30,8 @@ public class ProductSku {
     @Column(nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "prouct_category",nullable = false)
     private ProductCategory category;  // FMCG,PHARMA,APPAREL,CHEMICAL
 
     @Enumerated(EnumType.STRING)
@@ -40,5 +42,8 @@ public class ProductSku {
     private Double length;   // cm
     private Double width;
     private Double height;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 
 }

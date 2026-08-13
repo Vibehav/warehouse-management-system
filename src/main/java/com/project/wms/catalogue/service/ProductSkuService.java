@@ -30,7 +30,7 @@ public class ProductSkuService {
             throw new IllegalArgumentException("SKU code already exists: " + request.skuCode());
         }
 
-        Supplier supplier = supplierRepository.findById(request.supplierId())
+        Supplier supplier = supplierRepository.findByIdAndDeletedFalse(request.supplierId())
                 .orElseThrow(() -> new SupplierNotFoundException("Supplier not found: " + request.supplierId() + " check if it has been deleted."));
 
         ProductSku sku = new ProductSku();

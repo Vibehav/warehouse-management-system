@@ -1,5 +1,6 @@
 package com.project.wms.catalogue.domain;
 
+import com.project.wms.catalogue.enums.RotationPolicy;
 import com.project.wms.common.enums.ProductCategory;
 import com.project.wms.common.enums.StorageZoneType;
 import com.project.wms.supplier.domain.Supplier;
@@ -37,6 +38,10 @@ public class ProductSku {
     @Enumerated(EnumType.STRING)
     @Column(name = "storage_zone_type", nullable = false)
     private StorageZoneType storageZoneType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rotation_policy", nullable = false)
+    private RotationPolicy rotationPolicy;
 
     private Double weight;   // kg
     private Double length;   // cm

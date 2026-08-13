@@ -1,5 +1,6 @@
 package com.project.wms.auth.entity;
 
+import com.project.wms.supplier.domain.Supplier;
 import com.project.wms.warehouse.domain.Warehouse;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,6 +37,10 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
 
     private boolean active = true;
 

@@ -22,4 +22,7 @@ public class Supplier {
 
     @Column(nullable = false, unique = true)
     private String code;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

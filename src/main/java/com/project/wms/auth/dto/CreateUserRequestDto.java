@@ -4,5 +4,6 @@ public record CreateUserRequestDto(String email,
                                    String password,
                                    String name,
                                    Long roleId,
-                                   Long warehouseId ) {
+                                   Long warehouseId,
+                                   Long supplierId) {
 }

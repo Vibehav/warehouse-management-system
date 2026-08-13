@@ -10,6 +10,8 @@ import com.project.wms.auth.exception.RolesNotFoundException;
 import com.project.wms.auth.exception.UserNotFoundException;
 import com.project.wms.auth.repository.RoleRepository;
 import com.project.wms.auth.repository.UserRepository;
+import com.project.wms.supplier.domain.Supplier;
+import com.project.wms.supplier.service.SupplierService;
 import com.project.wms.warehouse.domain.Warehouse;
 import com.project.wms.warehouse.exception.WarehouseNotFoundException;
 import com.project.wms.warehouse.repository.WarehouseRepository;
@@ -28,6 +30,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final WarehouseRepository warehouseRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SupplierService supplierService;
 
     @Transactional
     public UserResponseDto createUser(CreateUserRequestDto request){
@@ -47,6 +50,11 @@ public class UserService {
             Warehouse warehouse = warehouseRepository.findById(request.warehouseId())
                     .orElseThrow(() -> new WarehouseNotFoundException("Warehouse not found: " + request.warehouseId()));
             user.setWarehouse(warehouse);
+        }
+
+        if (request.supplierId() != null) {
+            Supplier supplier = supplierService.getByActiveId(request.supplierId());
+            user.setSupplier(supplier);
         }
 
         user = userRepository.save(user);

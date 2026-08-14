@@ -1,5 +1,6 @@
 package com.project.wms.warehouse.domain;
 
+import com.project.wms.common.enums.StorageZoneType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,10 +25,17 @@ public class Location {
     @Column(nullable = false)
     private String code;
 
+    @Column(nullable = false)
+    private Integer capacity;
+
     @Enumerated(EnumType.STRING)
-    private LocationType type;
+    @Column(name = "storage_zone_type", nullable = false)
+    private StorageZoneType storageZoneType;
+
+    @Column(name = "sequence_order", nullable = false)
+    private Integer sequenceOrder;
 
     private boolean active = true;
+    private boolean blocked = false;
 
-    public enum LocationType { BIN }
 }

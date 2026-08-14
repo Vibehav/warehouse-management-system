@@ -28,8 +28,13 @@ public class PlacementRuleResolver {
 
     private boolean matches(PlacementRule rule, ProductSku sku) {
         return switch (rule.getConditionType()) {
-            case AMBIENT, CHILLED, FROZEN, HAZMAT -> sku.getCategory() != null
-                       && sku.getCategory().equals(rule.getCategory());
+            case CATEGORY_MATCH ->
+                    sku.getCategory() != null
+                            && sku.getCategory().name()
+                            .equals(rule.getConditionValue());
+
+            case DEFAULT ->
+                    true;
         };
     }
 }

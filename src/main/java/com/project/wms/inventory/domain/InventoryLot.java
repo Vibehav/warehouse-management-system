@@ -1,6 +1,6 @@
 package com.project.wms.inventory.domain;
 
-import com.project.wms.catalogue.folder.ProductSku;
+import com.project.wms.catalogue.domain.ProductSku;
 import com.project.wms.inventory.enums.LotState;
 import com.project.wms.supplier.domain.Supplier;
 import com.project.wms.warehouse.domain.Location;
@@ -38,10 +38,6 @@ public class InventoryLot {
     @JoinColumn(name = "warehouse_id", nullable = false)
     private Warehouse warehouse;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id", nullable = false)
-    private Location location;
-
     @Column(name = "batch_no")
     private String batchNo;
 
@@ -53,9 +49,6 @@ public class InventoryLot {
     @Enumerated(EnumType.STRING)
     private LotState state;
 
-    @Version
-    private int version; // optimistic locking column
-
     @Column(name = "created_at")
     private Instant createdAt;
 
@@ -63,12 +56,11 @@ public class InventoryLot {
     private Instant updatedAt;
 
     // Only Builder can call it
-    InventoryLot(ProductSku productSku, Supplier supplier, Warehouse warehouse, Location location,
+    InventoryLot(ProductSku productSku, Supplier supplier, Warehouse warehouse,
                  String batchNo, LocalDate expiryDate, int quantity, LotState state) {
         this.productSku = productSku;
         this.supplier = supplier;
         this.warehouse = warehouse;
-        this.location = location;
         this.batchNo = batchNo;
         this.expiryDate = expiryDate;
         this.quantity = quantity;
@@ -86,7 +78,6 @@ public class InventoryLot {
         private ProductSku productSku;
         private Supplier supplier;
         private Warehouse warehouse;
-        private Location location;
         private String batchNo;
         private LocalDate expiryDate;
         private int quantity;
@@ -104,11 +95,6 @@ public class InventoryLot {
 
         public InventoryLotBuilder warehouse(Warehouse warehouse) {
             this.warehouse = warehouse;
-            return this;
-        }
-
-        public InventoryLotBuilder location(Location location) {
-            this.location = location;
             return this;
         }
 
@@ -131,11 +117,10 @@ public class InventoryLot {
             Objects.requireNonNull(productSku, "productSku is required");
             Objects.requireNonNull(supplier, "supplier is required");
             Objects.requireNonNull(warehouse, "warehouse is required");
-            Objects.requireNonNull(location, "location is required");
             if (quantity <= 0) {
                 throw new IllegalArgumentException("quantity must be positive");
             }
-            return new InventoryLot(productSku, supplier, warehouse, location, batchNo, expiryDate, quantity, state);
+            return new InventoryLot(productSku, supplier, warehouse, batchNo, expiryDate, quantity, state);
         }
     }
     public void transitionTo(LotState newState) {

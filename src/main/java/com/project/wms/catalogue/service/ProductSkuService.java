@@ -4,6 +4,7 @@ import com.project.wms.catalogue.domain.ProductSku;
 import com.project.wms.catalogue.dto.CreateProductSkuRequestDto;
 import com.project.wms.catalogue.dto.ProductSkuResponseDto;
 import com.project.wms.catalogue.dto.UpdateProductSkuRequestDto;
+import com.project.wms.catalogue.exception.ProductSkuCodeAlreadyExistsException;
 import com.project.wms.catalogue.exception.ProductSkuNotFoundException;
 import com.project.wms.catalogue.repository.ProductSkuRepository;
 import com.project.wms.supplier.domain.Supplier;
@@ -27,7 +28,7 @@ public class ProductSkuService {
     public ProductSkuResponseDto create(CreateProductSkuRequestDto request) {
 
         if (skuRepository.existsBySkuCodeAndDeletedFalse(request.skuCode())) {
-            throw new IllegalArgumentException("SKU code already exists: " + request.skuCode());
+            throw new ProductSkuCodeAlreadyExistsException("SKU code already exists: " + request.skuCode());
         }
 
         Supplier supplier = supplierRepository.findByIdAndDeletedFalse(request.supplierId())

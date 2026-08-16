@@ -3,6 +3,7 @@ package com.project.wms.supplier.service;
 import com.project.wms.supplier.domain.Supplier;
 import com.project.wms.supplier.dto.CreateSupplierRequestDto;
 import com.project.wms.supplier.dto.SupplierResponseDto;
+import com.project.wms.supplier.exception.SupplierCodeAlreadyExistsException;
 import com.project.wms.supplier.exception.SupplierNotFoundException;
 import com.project.wms.supplier.repository.SupplierRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class SupplierService {
     public SupplierResponseDto create(CreateSupplierRequestDto request) {
 
         if (supplierRepository.existsByCodeAndDeletedFalse(request.code())) {
-            throw new IllegalArgumentException("Supplier code already exists: " + request.code());
+            throw new SupplierCodeAlreadyExistsException("Supplier code already exists: " + request.code());
         }
 
         Supplier supplier = new Supplier();

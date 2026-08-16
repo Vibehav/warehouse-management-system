@@ -4,6 +4,7 @@ import com.project.wms.warehouse.domain.Location;
 import com.project.wms.warehouse.domain.Warehouse;
 import com.project.wms.warehouse.dto.locationDTO.CreateLocationRequestDto;
 import com.project.wms.warehouse.dto.locationDTO.LocationResponseDto;
+import com.project.wms.warehouse.exception.LocationCodeAlreadyExistsException;
 import com.project.wms.warehouse.exception.LocationNotFoundException;
 import com.project.wms.warehouse.exception.WarehouseNotFoundException;
 import com.project.wms.warehouse.repository.LocationRepository;
@@ -28,7 +29,7 @@ public class LocationService {
                         new WarehouseNotFoundException("Active warehouse not found: " + warehouseId));
 
         if (locationRepository.existsByWarehouseIdAndCode(warehouseId, request.code())) {
-            throw new IllegalArgumentException("Location code already exists in warehouse: " + request.code());
+            throw new LocationCodeAlreadyExistsException("Location code already exists in warehouse: " + request.code());
         }
 
         Location location = new Location();

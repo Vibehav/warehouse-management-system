@@ -3,6 +3,7 @@ package com.project.wms.warehouse.service;
 import com.project.wms.warehouse.domain.Warehouse;
 import com.project.wms.warehouse.dto.warehouseDTO.CreateWarehouseRequestDto;
 import com.project.wms.warehouse.dto.warehouseDTO.WarehouseResponseDto;
+import com.project.wms.warehouse.exception.WarehouseCodeAlreadyExistsException;
 import com.project.wms.warehouse.exception.WarehouseNotFoundException;
 import com.project.wms.warehouse.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class WarehouseService {
     public WarehouseResponseDto create(CreateWarehouseRequestDto request) {
 
         if (warehouseRepository.existsByCode(request.code())) {
-            throw new IllegalArgumentException("Warehouse code already exists: " + request.code());
+            throw new WarehouseCodeAlreadyExistsException("Warehouse code already exists: " + request.code());
         }
 
         Warehouse warehouse = new Warehouse();

@@ -18,7 +18,13 @@ spring:
         format_sql: true
         jdbc:
           time_zone: Asia/Kolkata
-
+app:
+  jwt:
+    secret: "CHANGE_ME_this_must_be_at_least_256_bits_long_for_HS256_to_be_secure"
+    access-token-expiration-minutes: 10
+    refresh-token-expiration-days: 14
+  cookie:
+    secure: false   # local/dev default
 
 server:
   port: 8080

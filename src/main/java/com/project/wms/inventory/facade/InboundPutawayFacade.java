@@ -1,5 +1,11 @@
 package com.project.wms.inventory.facade;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.project.wms.catalogue.domain.ProductSku;
 import com.project.wms.catalogue.exception.ProductSkuNotFoundException;
 import com.project.wms.catalogue.repository.ProductSkuRepository;
@@ -16,12 +22,8 @@ import com.project.wms.warehouse.domain.Warehouse;
 import com.project.wms.warehouse.exception.WarehouseNotFoundException;
 import com.project.wms.warehouse.repository.WarehouseRepository;
 import com.project.wms.warehouse.service.PlacementService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -40,13 +42,16 @@ public class InboundPutawayFacade {
     public PutawayResult receive(Long skuId, Long supplierId, Long warehouseId,
                                  int quantity, String batchNo, LocalDate expiryDate) {
 
-        ProductSku sku = skuRepository.findById(skuId)
+        ProductSku sku = skuRepository.findByIdAndDeletedFalse(skuId)
                 .orElseThrow(() -> new ProductSkuNotFoundException("SKU not found: " + skuId));
-        Supplier supplier = supplierRepository.findById(supplierId)
+        Supplier supplier = supplierRepository.findByIdAndDeletedFalse(supplierId)
                 .orElseThrow(() -> new SupplierNotFoundException("Supplier not found: " + supplierId));
         Warehouse warehouse = warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new WarehouseNotFoundException("Warehouse not found: " + warehouseId));
 
+        if (!sku.getSupplier().getId().equals(supplier.getId())) {
+            throw new IllegalArgumentException("SKU " + sku.getSkuCode()  + " does not belong to supplier " + supplier.getId());
+        }
         // Step 1 — Create InventoryLot
         InventoryLot lot = InventoryLot.builder()
                 .productSku(sku)

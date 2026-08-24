@@ -1,7 +1,7 @@
 package com.project.wms.auth.service;
 
 
-import com.project.wms.auth.PermissionCatalog;
+import com.project.wms.auth.util.PermissionCatalog;
 import com.project.wms.auth.dto.LoginRequestDto;
 import com.project.wms.auth.dto.RegisterRequestDto;
 import com.project.wms.auth.dto.TokenPairResponse;

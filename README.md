@@ -52,6 +52,7 @@ All endpoints below are prefixed with the module base path shown in each section
 |---|---|---|-------------------------------------------------------------------------------|
 | POST | `/` | `USER_MANAGE` | Admin creates a login for warehouse staff, a supplier, or a business customer |
 | DELETE | `/{id}` | `USER_MANAGE` | Soft-delete a user and revoke all their outstanding refresh tokens            |
+| PATCH | `/{id}/restore` | `USER_MANAGE` | Reactivate a user; they must log in again to create a new session              |
 
 ### Suppliers — `/api/suppliers`
 

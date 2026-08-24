@@ -120,7 +120,6 @@ All endpoints below are prefixed with the module base path shown in each section
 | Method | Path | Permission | Purpose |
 |---|---|---|---|
 | POST | `/` | `FULFILLMENT_RESERVE_ALLOCATE` | Reserve stock for a SKU across balances (FEFO/FIFO), independent of any order |
-| POST | `/release` | `FULFILLMENT_RESERVE_ALLOCATE` | Give back previously reserved quantity on one balance |
 
 ### Fulfillment Orders — `/api/fulfillment-orders`
 
@@ -182,7 +181,7 @@ com.project.wms
 │   ├── controller/              InboundController, ReservationController, InventoryViewController
 │   ├── domain/
 │   │   └── state/                InventoryLotState + 5 concrete states + resolver
-│   ├── dto/                      fulfillmentDTO/ (reserve/release requests)
+│   ├── dto/                      fulfillmentDTO/ (reserve requests)
 │   ├── enums/                    LotState
 │   ├── exception/
 │   ├── expiryscheduler/          ExpirySweepScheduler

@@ -27,10 +27,15 @@ public interface InventoryBalanceRepository extends JpaRepository<InventoryBalan
     SELECT ib FROM InventoryBalance ib JOIN ib.inventoryLot il WHERE il.warehouse.id = :warehouseId""")
     List<InventoryBalance> findByWarehouseId(Long warehouseId);
 
-    /** SUPPLIER — only their own stock, across every warehouse it's stored in */
+    /** SUPPLIER — only their own stock, across every warehouse. */
     @Query("""
-    SELECT ib FROM InventoryBalance ib JOIN ib.inventoryLot il
-    WHERE il.supplier.id = :supplierId AND il.warehouse.id = :warehouseId
+    SELECT ib FROM InventoryBalance ib
+    JOIN FETCH ib.inventoryLot il
+    JOIN FETCH il.productSku
+    JOIN FETCH il.supplier
+    JOIN FETCH il.warehouse
+    JOIN FETCH ib.location
+    WHERE il.supplier.id = :supplierId
         """)
-    List<InventoryBalance> findBySupplierId(Long warehouseId,Long supplierId);
+    List<InventoryBalance> findAllBySupplierId(Long supplierId);
 }

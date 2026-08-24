@@ -1,7 +1,9 @@
 package com.project.wms.inventory.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import com.project.wms.auth.repository.UserRepository;
 import com.project.wms.inventory.domain.InventoryBalance;
 import com.project.wms.inventory.domain.InventoryLot;
 import com.project.wms.inventory.dto.InventoryBalanceResponseDto;
+import com.project.wms.inventory.dto.SupplierWarehouseInventoryResponseDto;
 import com.project.wms.inventory.exception.InventoryBalanceNotFound;
 import com.project.wms.inventory.repository.InventoryBalanceRepository;
 import com.project.wms.supplier.exception.SupplierNotFoundException;
@@ -100,8 +103,6 @@ public class InventoryBalanceService {
             throw new IllegalArgumentException("Cannot release more than the reserved quantity");
         }
         balance.setReservedQuantity(balance.getReservedQuantity() - quantity);
-         int newReserved = balance.getReservedQuantity() - quantity;
-         balance.setReservedQuantity(Math.max(newReserved, 0));
          balanceRepository.save(balance);
      }
 
@@ -116,7 +117,8 @@ public class InventoryBalanceService {
      }
 
 
-     public List<InventoryBalanceResponseDto> viewOwn(Long warehouseId,Long userId) {
+     @Transactional(readOnly = true)
+     public List<SupplierWarehouseInventoryResponseDto> viewOwnAcrossWarehouses(Long userId) {
          User user = userRepository.findById(userId)
                  .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
 
@@ -124,11 +126,18 @@ public class InventoryBalanceService {
              throw new SupplierNotFoundException("User " + userId + " has no linked supplier");
          }
 
-         List<InventoryBalanceResponseDto> results = new ArrayList<>();
-         for (InventoryBalance balance : balanceRepository.findBySupplierId(warehouseId,user.getSupplier().getId())) {
-             results.add(InventoryBalanceResponseDto.from(balance));
+         Map<Long, List<InventoryBalanceResponseDto>> balancesByWarehouse = new LinkedHashMap<>();
+         Map<Long, String> warehouseCodes = new LinkedHashMap<>();
+         for (InventoryBalance balance : balanceRepository.findAllBySupplierId(user.getSupplier().getId())) {
+             Long warehouseId = balance.getInventoryLot().getWarehouse().getId();
+             warehouseCodes.putIfAbsent(warehouseId, balance.getInventoryLot().getWarehouse().getCode());
+             balancesByWarehouse.computeIfAbsent(warehouseId, ignored -> new ArrayList<>())
+                     .add(InventoryBalanceResponseDto.from(balance));
          }
-         return results;
+         return balancesByWarehouse.entrySet().stream()
+                 .map(entry -> new SupplierWarehouseInventoryResponseDto(
+                         entry.getKey(), warehouseCodes.get(entry.getKey()), entry.getValue()))
+                 .toList();
      }
 
  }

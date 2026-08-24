@@ -115,6 +115,13 @@ All endpoints below are prefixed with the module base path shown in each section
 | POST | `/receive` | `INBOUND_RECEIVE` | Create a lot, run placement, return bin assignment(s) for the scanner |
 | POST | `/confirm` | `INBOUND_RECEIVE` | Operator confirms a scanned lot+bin; lot flips to `AVAILABLE` once every assignment is confirmed |
 
+### Inventory Views — `/api/inventory`
+
+| Method | Path | Permission | Purpose |
+|---|---|---|---|
+| GET | `/?warehouseId={warehouseId}` | `INVENTORY_VIEW` | View stock in one warehouse; warehouse users are limited to their assigned warehouse |
+| GET | `/mine` | `INVENTORY_VIEW_OWN` | Supplier views only its stock, grouped by warehouse |
+
 ### Reservations — `/api/inventory/reservations`
 
 | Method | Path | Permission | Purpose |

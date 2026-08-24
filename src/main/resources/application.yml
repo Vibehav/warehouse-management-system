@@ -25,7 +25,7 @@ app:
     refresh-token-expiration-days: 14
   cookie:
     secure: false   # local/dev default
+    same-site: Lax
 
 server:
   port: 8080
-

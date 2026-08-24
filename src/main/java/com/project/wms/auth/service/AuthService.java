@@ -1,6 +1,7 @@
 package com.project.wms.auth.service;
 
 
+import com.project.wms.auth.PermissionCatalog;
 import com.project.wms.auth.dto.LoginRequestDto;
 import com.project.wms.auth.dto.RegisterRequestDto;
 import com.project.wms.auth.dto.TokenPairResponse;
@@ -10,6 +11,7 @@ import com.project.wms.auth.entity.User;
 import com.project.wms.auth.exception.InvalidCredentialsException;
 import com.project.wms.auth.exception.RegistrationClosedException;
 import com.project.wms.auth.repository.RoleRepository;
+import com.project.wms.auth.repository.PermissionRepository;
 import com.project.wms.auth.repository.UserRepository;
 import com.project.wms.auth.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenService refreshTokenService;
@@ -48,6 +51,7 @@ public class AuthService {
                     role.setName("ADMIN");
                     return roleRepository.save(role);
                 });
+        grantAllPermissions(adminRole);
         admin.setRole(adminRole);
 
         admin = userRepository.save(admin);
@@ -66,6 +70,7 @@ public class AuthService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
+        repairAdminPermissions(user);
         return issueTokenPair(user);
     }
 
@@ -74,6 +79,7 @@ public class AuthService {
         RefreshTokenService.RotationResult result = refreshTokenService.rotate(rawRefreshToken);
         User user = result.user();
 
+        repairAdminPermissions(user);
         String accessToken = buildAccessToken(user);
         return new TokenPairResponse(accessToken, result.newRawToken());
     }
@@ -97,5 +103,25 @@ public class AuthService {
             }
         }
         return tokenProvider.generateAccessToken(user.getId(), user.getEmail(), permissions);
+    }
+
+    /** Repairs bootstrap admins created before permissions were provisioned. */
+    private void repairAdminPermissions(User user) {
+        if (user.getRole() != null && "ADMIN".equals(user.getRole().getName())) {
+            grantAllPermissions(user.getRole());
+        }
+    }
+
+    private void grantAllPermissions(Role role) {
+        for (String permissionName : PermissionCatalog.ADMIN_PERMISSIONS) {
+            Permission permission = permissionRepository.findByName(permissionName)
+                    .orElseGet(() -> {
+                        Permission created = new Permission();
+                        created.setName(permissionName);
+                        return permissionRepository.save(created);
+                    });
+            role.getPermissions().add(permission);
+        }
+        roleRepository.save(role);
     }
 }

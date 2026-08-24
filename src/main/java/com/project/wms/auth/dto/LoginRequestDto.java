@@ -1,3 +1,6 @@
 package com.project.wms.auth.dto;
 
-public record LoginRequestDto(String email, String password) {}
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginRequestDto(@NotBlank @Email String email, @NotBlank String password) {}

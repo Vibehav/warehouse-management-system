@@ -1,7 +1,9 @@
 package com.project.wms.auth.controller;
 
 import com.project.wms.auth.dto.*;
+import com.project.wms.auth.config.CookieProperties;
 import com.project.wms.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +15,19 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final CookieProperties cookieProperties;
 
     private static final String REFRESH_COOKIE_NAME = "refresh_token";
     private static final long REFRESH_COOKIE_MAX_AGE_SECONDS = 14 * 24 * 60 * 60; // 14 days, matches config
 
     @PostMapping("/register")
-    public ResponseEntity<AccessTokenResponseDto> register(@RequestBody RegisterRequestDto request) {
+    public ResponseEntity<AccessTokenResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
         TokenPairResponse tokens = authService.register(request);
         return respondWithTokens(tokens);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AccessTokenResponseDto> login(@RequestBody LoginRequestDto request) {
+    public ResponseEntity<AccessTokenResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         TokenPairResponse tokens = authService.login(request);
         return respondWithTokens(tokens);
     }
@@ -44,8 +47,8 @@ public class AuthController {
 
         ResponseCookie clearCookie = ResponseCookie.from(REFRESH_COOKIE_NAME, "")
                 .httpOnly(true)
-                .secure(false) // if prod set it as true
-                .sameSite("Lax")
+                .secure(cookieProperties.secure())
+                .sameSite(cookieProperties.sameSite())
                 .path("/api/auth")
                 .maxAge(0)
                 .build();
@@ -58,8 +61,8 @@ public class AuthController {
     private ResponseEntity<AccessTokenResponseDto> respondWithTokens(TokenPairResponse tokens) {
         ResponseCookie refreshCookie = ResponseCookie.from(REFRESH_COOKIE_NAME, tokens.refreshToken())
                 .httpOnly(true)   // JavaScript cannot read this — mitigates XSS token theft
-                .secure(false)     // sent over HTTPS -> true / sent over HTTP -> false
-                .sameSite("Lax")  // mitigates CSRF while still allowing top-level navigation
+                .secure(cookieProperties.secure())
+                .sameSite(cookieProperties.sameSite())
                 .path("/api/auth") // only sent back to auth endpoints, not the whole API
                 .maxAge(REFRESH_COOKIE_MAX_AGE_SECONDS)
                 .build();

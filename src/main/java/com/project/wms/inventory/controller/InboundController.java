@@ -2,6 +2,7 @@ package com.project.wms.inventory.controller;
 
 import com.project.wms.inventory.domain.InventoryLot;
 import com.project.wms.inventory.dto.ConfirmPutawayRequestDto;
+import com.project.wms.inventory.dto.InventoryLotResponseDto;
 import com.project.wms.inventory.dto.PutawayResponseDto;
 import com.project.wms.inventory.dto.ReceiveRequestDto;
 import com.project.wms.inventory.facade.InboundPutawayFacade;
@@ -32,8 +33,8 @@ public class InboundController {
 
     @PostMapping("/confirm")
     @PreAuthorize("hasAuthority('INBOUND_RECEIVE')")
-    public ResponseEntity<InventoryLot> confirm(@Valid @RequestBody ConfirmPutawayRequestDto request) {
+    public ResponseEntity<InventoryLotResponseDto> confirm(@Valid @RequestBody ConfirmPutawayRequestDto request) {
         InventoryLot lot = putawayFacade.confirmPutaway(request.lotId(), request.scannedLocationCode());
-        return ResponseEntity.ok(lot);
+        return ResponseEntity.ok(InventoryLotResponseDto.from(lot));
     }
 }

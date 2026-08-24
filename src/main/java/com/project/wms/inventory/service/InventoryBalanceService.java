@@ -1,5 +1,11 @@
 package com.project.wms.inventory.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.project.wms.auth.entity.User;
 import com.project.wms.auth.exception.UserNotFoundException;
 import com.project.wms.auth.repository.UserRepository;
@@ -9,14 +15,9 @@ import com.project.wms.inventory.dto.InventoryBalanceResponseDto;
 import com.project.wms.inventory.exception.InventoryBalanceNotFound;
 import com.project.wms.inventory.repository.InventoryBalanceRepository;
 import com.project.wms.supplier.exception.SupplierNotFoundException;
-import com.project.wms.supplier.service.SupplierService;
 import com.project.wms.warehouse.domain.LocationAllocation;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
  // "where and how much" side of a lot, as distinct from InventoryLot's "what".
 @Service
@@ -92,6 +93,13 @@ public class InventoryBalanceService {
          InventoryBalance balance = balanceRepository.findById(balanceId)
                  .orElseThrow(() -> new InventoryBalanceNotFound("InventoryBalance not found: " + balanceId));
 
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("quantity must be positive");
+        }
+        if (quantity > balance.getReservedQuantity()) {
+            throw new IllegalArgumentException("Cannot release more than the reserved quantity");
+        }
+        balance.setReservedQuantity(balance.getReservedQuantity() - quantity);
          int newReserved = balance.getReservedQuantity() - quantity;
          balance.setReservedQuantity(Math.max(newReserved, 0));
          balanceRepository.save(balance);

@@ -4,7 +4,18 @@ import com.project.wms.catalogue.enums.RotationPolicy;
 import com.project.wms.common.enums.ProductCategory;
 import com.project.wms.common.enums.StorageZoneType;
 import com.project.wms.supplier.domain.Supplier;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,7 +43,7 @@ public class ProductSku {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "prouct_category",nullable = false)
+    @Column(name = "product_category",nullable = false)
     private ProductCategory category;  // FMCG,PHARMA,APPAREL,CHEMICAL
 
     @Enumerated(EnumType.STRING)

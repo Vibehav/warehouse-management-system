@@ -1,5 +1,10 @@
 package com.project.wms.catalogue.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.project.wms.catalogue.domain.ProductSku;
 import com.project.wms.catalogue.dto.CreateProductSkuRequestDto;
 import com.project.wms.catalogue.dto.ProductSkuResponseDto;
@@ -10,11 +15,8 @@ import com.project.wms.catalogue.repository.ProductSkuRepository;
 import com.project.wms.supplier.domain.Supplier;
 import com.project.wms.supplier.exception.SupplierNotFoundException;
 import com.project.wms.supplier.repository.SupplierRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class ProductSkuService {
     @Transactional
     public ProductSkuResponseDto create(CreateProductSkuRequestDto request) {
 
-        if (skuRepository.existsBySkuCodeAndDeletedFalse(request.skuCode())) {
+        if (skuRepository.existsBySkuCode(request.skuCode())) {
             throw new ProductSkuCodeAlreadyExistsException("SKU code already exists: " + request.skuCode());
         }
 
@@ -40,6 +42,7 @@ public class ProductSkuService {
         sku.setName(request.name());
         sku.setCategory(request.category());
         sku.setStorageZoneType(request.storageZoneType());
+        sku.setRotationPolicy(request.rotationPolicy());
         sku.setWeight(request.weight());
         sku.setLength(request.length());
         sku.setWidth(request.width());
@@ -69,13 +72,14 @@ public class ProductSkuService {
         ProductSku sku = skuRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ProductSkuNotFoundException("Product SKU not found: " + id + " check if it has been deleted."));
 
-        sku.setName(request.name());
-        sku.setCategory(request.category());
-        sku.setStorageZoneType(request.storageZoneType());
-        sku.setWeight(request.weight());
-        sku.setLength(request.length());
-        sku.setWidth(request.width());
-        sku.setHeight(request.height());
+        if (request.name() != null && !request.name().isBlank()) sku.setName(request.name());
+        if (request.category() != null) sku.setCategory(request.category());
+        if (request.storageZoneType() != null) sku.setStorageZoneType(request.storageZoneType());
+        if (request.rotationPolicy() != null) sku.setRotationPolicy(request.rotationPolicy());
+        if (request.weight() != null && request.weight() > 0) sku.setWeight(request.weight());
+        if (request.length() != null && request.length() > 0) sku.setLength(request.length());
+        if (request.width() != null && request.width() > 0) sku.setWidth(request.width());
+        if (request.height() != null && request.height() > 0) sku.setHeight(request.height());
 
         return ProductSkuResponseDto.from(sku);
     }

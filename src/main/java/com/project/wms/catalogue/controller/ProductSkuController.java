@@ -4,6 +4,7 @@ import com.project.wms.catalogue.dto.CreateProductSkuRequestDto;
 import com.project.wms.catalogue.dto.ProductSkuResponseDto;
 import com.project.wms.catalogue.dto.UpdateProductSkuRequestDto;
 import com.project.wms.catalogue.service.ProductSkuService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class ProductSkuController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('CATALOGUE_MANAGE')")
-    public ResponseEntity<ProductSkuResponseDto> create(@RequestBody CreateProductSkuRequestDto request) {
+    public ResponseEntity<ProductSkuResponseDto> create(@Valid @RequestBody CreateProductSkuRequestDto request) {
         ProductSkuResponseDto response = productSkuService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -41,7 +42,7 @@ public class ProductSkuController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('CATALOGUE_MANAGE')")
-    public ResponseEntity<ProductSkuResponseDto> update(@PathVariable Long id, @RequestBody UpdateProductSkuRequestDto request) {
+    public ResponseEntity<ProductSkuResponseDto> update(@PathVariable Long id, @Valid @RequestBody UpdateProductSkuRequestDto request) {
         return ResponseEntity.ok(productSkuService.update(id, request));
     }
 

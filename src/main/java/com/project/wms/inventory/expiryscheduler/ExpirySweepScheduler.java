@@ -14,10 +14,9 @@ import java.util.List;
 
 /**
  * Nightly sweep: any AVAILABLE lot past its expiryDate is transitioned to
- * EXPIRED — through the State pattern, not a raw UPDATE, so the same
- * guard logic that blocks reservation on an expired lot everywhere else
- * applies here too. The cron is only the TRIGGER; InventoryLotState owns
- * the actual transition rule.
+ * EXPIRED — through the State pattern, not a raw UPDATE. Existing reservations
+ * are deliberately retained for manual exception handling; an EXPIRED state
+ * cannot transition to SHIPPED, so a future shipment flow must reject it.
  */
 @Component
 @RequiredArgsConstructor

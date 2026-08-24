@@ -1,5 +1,12 @@
 package com.project.wms.inventory.service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.project.wms.catalogue.domain.ProductSku;
 import com.project.wms.catalogue.enums.RotationPolicy;
 import com.project.wms.catalogue.exception.ProductSkuNotFoundException;
@@ -7,13 +14,8 @@ import com.project.wms.catalogue.repository.ProductSkuRepository;
 import com.project.wms.inventory.domain.InventoryBalance;
 import com.project.wms.inventory.exception.InsufficientStockException;
 import com.project.wms.inventory.repository.InventoryBalanceRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class FulfillmentReservationService {
 
     @Transactional
     public FulfillmentReservationResult reserve(Long skuId, Long warehouseId, int requestedQty) {
-        ProductSku sku = skuRepository.findById(skuId)
+        ProductSku sku = skuRepository.findByIdAndDeletedFalse(skuId)
                 .orElseThrow(() -> new ProductSkuNotFoundException("SKU not found: " + skuId));
 
         List<InventoryBalance> candidates = balanceRepository.findReservableBalancesForSku(skuId, warehouseId);

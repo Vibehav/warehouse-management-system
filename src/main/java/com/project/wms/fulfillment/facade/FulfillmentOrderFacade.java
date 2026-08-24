@@ -1,5 +1,10 @@
 package com.project.wms.fulfillment.facade;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.project.wms.auth.entity.User;
 import com.project.wms.auth.repository.UserRepository;
 import com.project.wms.catalogue.domain.ProductSku;
@@ -12,17 +17,14 @@ import com.project.wms.fulfillment.domain.state.FulfillmentOrderStateResolver;
 import com.project.wms.fulfillment.exception.FulfillmentOrderNotFoundException;
 import com.project.wms.fulfillment.repository.FulfillmentOrderLineReservationRepository;
 import com.project.wms.fulfillment.repository.FulfillmentOrderRepository;
-import com.project.wms.inventory.service.FulfillmentReservationService;
 import com.project.wms.inventory.repository.InventoryBalanceRepository;
+import com.project.wms.inventory.service.FulfillmentReservationService;
 import com.project.wms.inventory.service.InventoryBalanceService;
 import com.project.wms.warehouse.domain.Warehouse;
 import com.project.wms.warehouse.exception.WarehouseNotFoundException;
 import com.project.wms.warehouse.repository.WarehouseRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Facade pattern — orchestrates order creation, allocation, and cancellation
@@ -56,7 +58,7 @@ public class FulfillmentOrderFacade {
                 .warehouse(warehouse);
 
         for (OrderLineRequest lineRequest : requestedLines) {
-            ProductSku sku = skuRepository.findById(lineRequest.skuId())
+            ProductSku sku = skuRepository.findByIdAndDeletedFalse(lineRequest.skuId())
                     .orElseThrow(() -> new ProductSkuNotFoundException("SKU not found: " + lineRequest.skuId()));
             builder.addLine(sku, lineRequest.quantity());
         }
